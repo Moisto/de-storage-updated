@@ -161,9 +161,9 @@ export default function Uploads() {
         {/* Displayed search items */}
         <div className="px-16 flex gap-7 mt-10">
           {searchResults.map((file, index) => (
-            <div >
+            <div key={index}>
               <UploadFiles
-             
+                key={index}
                 file={file}
                 fileNames={fileNames[index]}
                 fileDataUrl={fileDataUrls[index]}
