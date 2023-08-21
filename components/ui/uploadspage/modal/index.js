@@ -27,7 +27,7 @@ export default function Modal({filechange, closeModal}) {
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, []);
+  });
 
 
   return (

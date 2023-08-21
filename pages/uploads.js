@@ -96,7 +96,7 @@ export default function Uploads() {
   useEffect(() => {
     handleSearch()
     
-  }, [searchTerm]);
+  }, );
 
 
   // Modal visibility

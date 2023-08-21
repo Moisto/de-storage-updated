@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 
@@ -67,7 +68,9 @@ export default function UploadFiles({
           style={{ background: "rgba(160, 150, 150, 0.64)" }}
           onClick={() => console.log("clicked!!")}
         >
-          <img
+          <Image
+          width={500}
+          height={500}
             src={fileDataUrl}
             alt={`Selected File ${index + 1}`}
             className="w-[100%] h-[100%]"
@@ -77,11 +80,13 @@ export default function UploadFiles({
         <div className="px-2 w-[100%]  h-[40%] flex justify-between items-center text-center gap-2">
           {/* Icon */}
           <span>
-            <img
+            <Image
+            width={500}
+            height={500}
               className="w-7 h-7 "
               alt=""
               src="/c144927d-03d3-47bf-a4cc-e450f712d1b8.svg"
-            ></img>
+            ></Image>
           </span>
           {/* Icon */}
 

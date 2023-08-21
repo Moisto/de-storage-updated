@@ -1,3 +1,4 @@
+import Image from "next/image";
 
 
 
@@ -32,11 +33,13 @@ export default function Hero() {
           </div>
         </div>
 
-        <img
+        <Image
+          width={500}
+          height={500}
           className="my-5 md:my-0 h-[60vw] md:h-[30vw]  "
           alt=""
           src="/undraw_ether_re_y7ft (1) 1.png"
-        ></img>
+        ></Image>
       </div>
     </>
   );
