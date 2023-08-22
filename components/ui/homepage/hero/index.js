@@ -22,7 +22,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <div className="flex items-center sm:max-lg:justify-center gap-[8%]  text-black font-bold ">
+          <div className="flex items-center  gap-[8%]  text-black font-bold ">
             <span className="w-[4px] h-[35px] bg-white"></span>
             <span>Easy</span>
             <span className="w-[4px] h-[35px] bg-white"></span>

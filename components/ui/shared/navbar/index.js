@@ -14,7 +14,7 @@ export default function Navbar() {
         style={{ background: "rgba(160, 150, 150, 0.54)" }}
         className="flex justify-between items-center py-4 px-4 md:px-16   w-full h-auto m-auto   backdrop-blur-sm font-roboto"
       >
-        <p className="sm:max-md:bg-red-600 md:text-2xl text-white font-normal">
+        <p className="md:text-2xl text-white font-normal">
           <span style={{ color: "rgba(255, 255, 255, 0.8)" }}>De</span>Storage
         </p>
 

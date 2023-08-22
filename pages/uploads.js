@@ -128,7 +128,7 @@ export default function Uploads() {
 
   
   return (
-    <>
+    
       <div
         className={`bg-gradient-radial from-grey to-grey2 relative   h-auto overflow-hidden  `}
       >
@@ -214,7 +214,7 @@ export default function Uploads() {
         
 
       </div>
-    </>
+    
   );
 }
 
