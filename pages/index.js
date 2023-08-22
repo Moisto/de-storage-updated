@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <div
-        className={`bg-gradient-radial from-grey to-grey2 relative h-[100vh]  md:h-auto overflow-hidden  `}
+        className={`bg-gradient-radial from-grey to-grey2 relative h-[auto]  md:h-auto overflow-hidden  `}
       >
         <NavWrapper />
 
