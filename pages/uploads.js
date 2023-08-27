@@ -43,7 +43,7 @@ export default function Uploads() {
   const getDocuments = async () => {
     const deContract = await getContract();
     var projects = await deContract.getDocuments(); 
-    console.log(projects[0]) 
+    console.log(projects) 
     return projects;
   }
 
