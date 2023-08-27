@@ -1,4 +1,5 @@
 import { Button }from "@components/ui/shared/";
+import Link from "next/link";
 
 // import { useWeb3 } from "@components/providers";
 
@@ -14,9 +15,11 @@ export default function Navbar() {
         style={{ background: "rgba(160, 150, 150, 0.54)" }}
         className="flex justify-between items-center py-4 px-4 md:px-16   w-full h-auto m-auto   backdrop-blur-sm font-roboto"
       >
-        <p className="md:text-2xl text-white font-normal">
-          <span style={{ color: "rgba(255, 255, 255, 0.8)" }}>De</span>Storage
-        </p>
+        <Link href="./">
+          <p className="md:text-2xl text-white font-normal">
+            <span style={{ color: "rgba(255, 255, 255, 0.8)" }}>De</span>Storage
+          </p>
+        </Link>
 
         {/* <Button className="px-4 py-2" >
           Connect wallet

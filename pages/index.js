@@ -7,6 +7,7 @@ import { ButtonWrapper, NavWrapper } from "@components/ui/wrappers";
 
 // import Image from "next/image";
 
+
 export default function Home() {
   return (
     <>

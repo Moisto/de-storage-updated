@@ -1,4 +1,4 @@
-import { Modal, UploadFiles } from "@components/ui/uploadspage";
+import { DisplayModal, Modal, UploadFiles } from "@components/ui/uploadspage";
 import { BaseLayout } from "@components/ui/layout";
 import { Button, Navbar } from "@components/ui/shared";
 import Link from "next/link";
@@ -12,10 +12,9 @@ import { NavWrapper } from "@components/ui/wrappers";
 
 
 
-
 export default function Uploads() {
   // files
-  // const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [fileDataUrls, setFileDataUrls] = useState([]);
   const [fileNames, setFileNames] = useState([]);
@@ -47,7 +46,7 @@ export default function Uploads() {
       ...newFileDataUrls,
     ]);
 
-    // setSelectedFiles((prevSelectedFiles) => [
+    // setSelectedFile((prevSelectedFiles) => [
     //   ...prevSelectedFiles,
     //   ...newFiles,
     // ]);
@@ -56,11 +55,13 @@ export default function Uploads() {
     setIsModalVisible(false);
   };
 
+  const closeContentModal = () => {
+    setIsModalVisible(false);
+  }
 
-  // const files = [
-  //   ...fileDataUrls
-  // ]
 
+
+  // Search functionality
   const handleSearch = () => {
     if (searchTerm === "") {
       setSearchResults([]);
@@ -87,6 +88,17 @@ export default function Uploads() {
     }
 
   };
+
+
+  // Display content on File click
+  const handleFileClick = (fileDataUrl)=> {
+    setSelectedFile(fileDataUrl)
+  }
+
+  const closeModal = ()=> {
+    setSelectedFile(null)
+   
+  }
 
 
   
@@ -128,93 +140,103 @@ export default function Uploads() {
 
   
   return (
-    
-      <div
-        className={`bg-gradient-radial from-grey to-grey2 relative   h-auto overflow-hidden  `}
-      >
-        <NavWrapper />
+    <div
+      className={`bg-gradient-radial from-grey to-grey2 relative h-auto overflow-hidden  `}
+    >
+      <NavWrapper />
 
-        <Navbar />
+      <Navbar />
 
-        {/* search for files */}
-        <div className="flex justify-center">
-          <div className=" md:w-[40%] flex justify-between text-center mt-10 px-8 py-3 bg-white rounded-[50px] border-[2px] border-circleRed">
-            <input
-              className="w-[100%] outline-none"
-              placeholder="search files "
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            ></input>
-            <button
-              // value={searchTerm}
-              onClick={handleSearch}
-              variant="round"
-              size="sm"
-            >
-              Search
-            </button>
-          </div>
+      {/* search for files */}
+      <div className="flex justify-center">
+        <div className=" md:w-[40%] flex justify-between text-center mt-10 px-8 py-3 bg-white rounded-[50px] border-[2px] border-circleRed">
+          <input
+            className="w-[100%] outline-none"
+            placeholder="search files "
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          ></input>
+          <button
+            // value={searchTerm}
+            onClick={handleSearch}
+            variant="round"
+            size="sm"
+          >
+            Search
+          </button>
         </div>
-        {/* search for files Ends*/}
-
-        {/* Displayed search items */}
-        <div className="px-16 flex gap-7 mt-10">
-          {searchResults.map((file, index) => (
-            <div key={index}>
-              <UploadFiles
-                key={index}
-                file={file}
-                fileNames={fileNames[index]}
-                fileDataUrl={fileDataUrls[index]}
-            
-              />
-            </div>
-          ))}
-        </div>
-        {/* Displayed search items end */}
-
-        {/* Buttons */}
-        <div className="flex px-16 mt-20 gap-7">
-          <Link href="./">
-            <Button>Back</Button>
-          </Link>
-
-          <Button visibility={setIsModalVisible}>Upload</Button>
-        </div>
-        {/* Buttons end */}
-
-        {/* Contents dashboard */}
-        <div
-          style={{ background: "rgba(255, 255, 255, 0.26)" }}
-          className="mt-10 md:px-16 w-full min-h-screen bg-indigo-400 border-circleRed border-t-2 backdrop-blur-[10px]"
-        >
-          <div className="grid text-center grid-cols-2 md:grid-cols-5 py-4 gap-y-12">
-            {fileDataUrls.length > 0 &&
-              fileDataUrls.map((file, index) => (
-                <div key={index}>
-                  <UploadFiles
-                    key={index}
-                    file={file}
-                    fileNames={fileNames[index]}
-                    fileDataUrl={fileDataUrls[index]}
-                    index={index}
-                    deleteFile={deleteFile}
-                  />
-                </div>
-              ))}
-          </div>
-        </div>
-        {/* Contents dashboard ends */}
-
-        {/* Modal */}
-        {isModalVisible && <Modal filechange={handleFileChange} />}
-        {/* Modal Ends */}
-
-        
-
       </div>
-    
+      {/* search for files Ends*/}
+
+      {/* Displayed search items */}
+      <div className="px-16 flex gap-7 mt-10">
+        {searchResults.map((file, index) => (
+          <div key={index}>
+            <UploadFiles
+              key={index}
+              file={file}
+              fileNames={fileNames[index]}
+              fileDataUrl={fileDataUrls[index]}
+              onFileClick={() => handleFileClick(fileDataUrls[index])}
+              index={index}
+            />
+          </div>
+        ))}
+      </div>
+      {/* Displayed search items end */}
+
+      {/* Buttons */}
+      <div className="flex px-16 mt-20 gap-7">
+        <Link href="./">
+          <Button>Back</Button>
+        </Link>
+
+        <Button visibility={setIsModalVisible}>Upload</Button>
+      </div>
+      {/* Buttons end */}
+
+      {/* Contents dashboard */}
+      <div
+        style={{ background: "rgba(255, 255, 255, 0.26)" }}
+        className="mt-10 md:px-16 w-full min-h-screen bg-indigo-400 border-circleRed border-t-2 backdrop-blur-[10px]"
+      >
+        <div className="grid text-center grid-cols-2 md:grid-cols-5 py-4 gap-y-12 gap-10">
+          {fileDataUrls.length > 0 &&
+            fileDataUrls.map((file, index) => (
+              <div key={index}>
+                <UploadFiles
+                  key={index}
+                  file={file}
+                  fileNames={fileNames[index]}
+                  fileDataUrl={fileDataUrls[index]}
+                  index={index}
+                  deleteFile={deleteFile}
+                  onFileClick={() => handleFileClick(fileDataUrls[index])}
+                />
+              </div>
+            ))}
+        </div>
+      </div>
+      {/* Contents dashboard ends */}
+
+      {/* Modal */}
+      {isModalVisible && (
+        <Modal
+          filechange={handleFileChange}
+          closeContentModal={closeContentModal}
+        />
+      )}
+
+      {/*Content display Modal */}
+      {selectedFile && (
+        <DisplayModal
+          fileDataUrl={selectedFile}
+          fileNames={fileNames}
+          closeModal={closeModal}
+        />
+      )}
+    </div>
   );
 }
 
