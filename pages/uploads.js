@@ -4,6 +4,8 @@ import { Button, Navbar } from "@components/ui/shared";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { NavWrapper } from "@components/ui/wrappers";
+import { ethers } from "ethers";
+import contractabi from 'components/abi/contractabi'
 
 
 
@@ -25,8 +27,25 @@ export default function Uploads() {
   const [searchResults, setSearchResults] = useState([]);
 
   
+  const contractAddr = "0xCD5d51a0378f4060611F304d664035B5A50FCb7d";
+  
+  const getContract = async () => {
+    if (window.ethereum) {
+      const provider = new ethers.BrowserProvider(window.ethereum); // A connection to the Ethereum network
+      var signer = await provider.getSigner(); // Holds your private key and can sign things
+      const Contract = new ethers.Contract(contractAddr, contractabi, signer);
+      return Contract;
+    } else {
+      alert("No wallet detected");
+    }
+  };
 
-
+  const getDocuments = async () => {
+    const deContract = await getContract();
+    var projects = await deContract.getDocuments(); 
+    console.log(projects[0]) 
+    return projects;
+  }
 
 
 
@@ -107,6 +126,7 @@ export default function Uploads() {
   // Clear out search field when empty
   useEffect(() => {
     handleSearch()
+    getDocuments()
     
   }, );
 
