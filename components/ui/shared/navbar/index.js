@@ -2,8 +2,11 @@ import { Button }from "@components/ui/shared/";
 import Link from "next/link";
 import { useState } from "react";
 
+// import { useWeb3 } from "@components/providers";
+
 
 export default function Navbar() {
+
   // const {connect} = useWeb3()
   const [isConnected, setIsConnected] = useState(false);
   const [account, setAccount] = useState(null);
