@@ -6,17 +6,14 @@ import { useEffect, useRef } from "react";
 
 
 
-export default function Modal({filechange, closeModal}) {
-  
-
+export default function Modal({ filechange, closeContentModal }) {
   const modalRef = useRef(null);
 
- 
+
 
   const handleOutsideClick = (e) => {
-  
     if (modalRef.current && !modalRef.current.contains(e.target)) {
-      closeModal;
+      closeContentModal;
     }
   };
 
@@ -32,12 +29,14 @@ export default function Modal({filechange, closeModal}) {
 
   return (
     <>
-      <div ref={modalRef}
+      <div
+        ref={modalRef}
         style={{ background: "rgba(160, 150, 150, 0.54)" }}
-        className=" p-4 text-center fixed top-[30%] left-[10vw] md:left-[25%] w-[85%] md:w-[50%] backdrop-blur-sm "
+        className=" p-4 text-center fixed top-[30%] left-[50%] translate-x-[-50%]  w-[85%] md:w-[50%] backdrop-blur-sm "
       >
-        <div className="py-3 uppercase font-bold text-gray-800">
-          <p>Upload your files</p>
+        <div className="py-3 uppercase font-bold text-gray-800 flex justify-between">
+          <button onClick={closeContentModal}>Close</button>
+          <p className="">Upload your files</p>
         </div>
         <div className=" flex items-center justify-center ">
           <label
@@ -68,7 +67,12 @@ export default function Modal({filechange, closeModal}) {
                 SVG, PNG, JPG or GIF (MAX. 800x400px)
               </p>
             </div>
-            <input onChange={filechange} id="dropzone-file" type="file" className="hidden" />
+            <input
+              onChange={filechange}
+              id="dropzone-file"
+              type="file"
+              className="hidden"
+            />
           </label>
         </div>
       </div>

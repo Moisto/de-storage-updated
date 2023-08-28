@@ -24,6 +24,7 @@ export default function UploadFiles({
   fileDataUrl,
   index,
   deleteFile,
+  onFileClick
 
 
 }) {
@@ -66,11 +67,11 @@ export default function UploadFiles({
         <div
           className="cursor-pointer h-[60%] w-[100%] p-2 border-[1px] backdrop-blur-lg shadow-inner  rounded-[10px]"
           style={{ background: "rgba(160, 150, 150, 0.64)" }}
-          onClick={() => console.log("clicked!!")}
+          onClick={onFileClick}
         >
           <Image
-          width={500}
-          height={500}
+            width={500}
+            height={500}
             src={fileDataUrl}
             alt={`Selected File ${index + 1}`}
             className="w-[100%] h-[100%]"
@@ -81,8 +82,8 @@ export default function UploadFiles({
           {/* Icon */}
           <span>
             <Image
-            width={500}
-            height={500}
+              width={500}
+              height={500}
               className="w-7 h-7 "
               alt=""
               src="/c144927d-03d3-47bf-a4cc-e450f712d1b8.svg"
@@ -91,7 +92,7 @@ export default function UploadFiles({
           {/* Icon */}
 
           {/* File name */}
-          <span className="text-center">
+          <span className="text-center w-[50%]">
             <div className="text-sm overflow-hidden">
               <p>{fileNames}</p>
             </div>
@@ -111,15 +112,11 @@ export default function UploadFiles({
             </div>
 
             <ul className={` dropdown-menu ${isOpen ? "open" : ""} `}>
-              <li 
-                onClick={() => deleteFile(file)}>Delete
-              </li>
+              <li onClick={() => deleteFile(file)}>Delete</li>
               <li>Share</li>
-              <li 
-                onClick={() => downloadFile(fileDataUrl, fileNames)}>
+              <li onClick={() => downloadFile(fileDataUrl, fileNames)}>
                 Download
               </li>
-              
             </ul>
           </span>
         </div>
