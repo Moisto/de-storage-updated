@@ -4,14 +4,11 @@ import { Button, Navbar } from "@components/ui/shared";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { NavWrapper } from "@components/ui/wrappers";
-
-
-
-
-
-
-
-
+// import { web3ContextProvider } from "@components/context";
+import { useWeb3Context } from "@components/context";
+import { Moralis } from "moralis-v1";
+import { uploadfileToPinata } from "@components/ui/uploadfiles";
+import { Loader } from "@components/ui/shared";
 
 export default function Uploads() {
   // files
@@ -20,46 +17,57 @@ export default function Uploads() {
   const [fileDataUrls, setFileDataUrls] = useState([]);
   const [fileNames, setFileNames] = useState([]);
 
+  // const[] = useState([])
 
   // Search for items
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
+  const { uploadfile, getDocuments, deleteDoc } = useWeb3Context();
   
+  const fetchData = async () => {
+    const filesUri = await getDocuments();
 
+    const fetchRequests = filesUri.map(async (file) => {
+      const requestURL = `https://ipfs.io/ipfs/${file}`;
+      const filesMetadata = await (await fetch(requestURL)).json();
+      const url = filesMetadata.fileURL;
+      const name = filesMetadata.fileName;
+      return { url, name };
+    });
 
+    const results = await Promise.all(fetchRequests);
 
+    // Update state after all fetch requests have completed
+    const urls = results.map((result) => result.url);
+    const names = results.map((result) => result.name);
 
+    setFileDataUrls(urls);
+    setFileNames(names);
 
-  const handleFileChange = (event) => {
-    const newFiles = event.target.files;
+    console.log(names);
+  };
+  
+  const handleFileChange = async (event) => {
+    // show loader
+    setLoadingMsg("Uploading your file to IPFS");
+    setIsLoading(true);
 
-    const newFileDataUrls = Array.from(newFiles).map((file) =>
-      URL.createObjectURL(file)
-    );
+    // Pinata/Ipfs Uploading
+    const newFiles = event.target.files[0];
+    const fileHash = await uploadfileToPinata(newFiles);
 
-    const newFileNames = Array.from(newFiles).map((file) => file.name);
-
-    setFileNames((prevFileNames) => [...prevFileNames, ...newFileNames]); // Update file names
-
-    setFileDataUrls((prevFileDataUrls) => [
-      ...prevFileDataUrls,
-      ...newFileDataUrls,
-    ]);
-
-    // setSelectedFiles((prevSelectedFiles) => [
-    //   ...prevSelectedFiles,
-    //   ...newFiles,
-    // ]);
-
-
+    if (fileHash == undefined) {
+      setIsLoading(false);
+    } else {
+      setLoadingMsg("Please Confirm with your Wallet");
+      await uploadfile(fileHash);
+      await fetchData();
+      // window.location.reload(true);
+      setIsLoading(false);
+    }
     setIsModalVisible(false);
   };
-
-
-  // const files = [
-  //   ...fileDataUrls
-  // ]
 
   const handleSearch = () => {
     if (searchTerm === "") {
@@ -80,38 +88,29 @@ export default function Uploads() {
     // If any matching files found in selectedFiles, set them as searchResults
     if (filteredFileDataUrls.length > 0) {
       setSearchResults(filteredFileDataUrls);
-
     } else {
-      
-      setSearchResults([])
+      setSearchResults([]);
     }
-
   };
-
-
-  
-
 
   // Clear out search field when empty
   useEffect(() => {
-    handleSearch()
-    
-  }, );
-
+    fetchData();
+  }, []);
 
   // Modal visibility
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-   
+  //Loading Visibility
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState("Loading");
 
   // Add a deleteFile function to remove a file from the dashboard and selectedFiles array
   const deleteFile = (fileToDelete) => {
-
     // Remove the file from the dashboard by filtering it out
     const updatedSelectedFiles = fileDataUrls.filter(
       (file) => file !== fileToDelete
     );
-
 
     // Remove the file from searchResults if it exists
     const updatedSearchResults = searchResults
@@ -123,12 +122,9 @@ export default function Uploads() {
     setSearchResults(updatedSearchResults);
   };
 
-
-
-
-  
   return (
-    
+    <>
+      {isLoading && <Loader msg={loadingMsg} />}
       <div
         className={`bg-gradient-radial from-grey to-grey2 relative   h-auto overflow-hidden  `}
       >
@@ -167,7 +163,6 @@ export default function Uploads() {
                 file={file}
                 fileNames={fileNames[index]}
                 fileDataUrl={fileDataUrls[index]}
-            
               />
             </div>
           ))}
@@ -210,11 +205,8 @@ export default function Uploads() {
         {/* Modal */}
         {isModalVisible && <Modal filechange={handleFileChange} />}
         {/* Modal Ends */}
-
-        
-
       </div>
-    
+    </>
   );
 }
 
