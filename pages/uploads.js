@@ -4,12 +4,8 @@ import { Button, Navbar } from "@components/ui/shared";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { NavWrapper } from "@components/ui/wrappers";
-// import { web3ContextProvider } from "@components/context";
-import { useWeb3Context } from "@components/context";
-import { Moralis } from "moralis-v1";
-import { uploadfileToPinata } from "@components/ui/uploadfiles";
-import { Loader } from "@components/ui/shared";
 import { ethers } from "ethers";
+import contractabi from 'components/abi/contractabi'
 
 
 
@@ -25,53 +21,56 @@ export default function Uploads() {
   const [fileDataUrls, setFileDataUrls] = useState([]);
   const [fileNames, setFileNames] = useState([]);
 
-  // const[] = useState([])
 
   // Search for items
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  const { uploadfile, getDocuments, deleteDoc } = useWeb3Context();
   
-  const fetchData = async () => {
-    const filesUri = await getDocuments();
-
-    const fetchRequests = filesUri.map(async (file) => {
-      const requestURL = `https://ipfs.io/ipfs/${file}`;
-      const filesMetadata = await (await fetch(requestURL)).json();
-      const url = filesMetadata.fileURL;
-      const name = filesMetadata.fileName;
-      return { url, name };
-    });
-
-    const results = await Promise.all(fetchRequests);
-
-
-    // Update state after all fetch requests have completed
-    const urls = results.map((result) => result.url);
-    const names = results.map((result) => result.name);
-
-    setFileDataUrls(urls);
-    setFileNames(names);
+  const contractAddr = "0xCD5d51a0378f4060611F304d664035B5A50FCb7d";
   
-  const handleFileChange = async (event) => {
-    // show loader
-    setLoadingMsg("Uploading your file to IPFS");
-    setIsLoading(true);
-
-    // Pinata/Ipfs Uploading
-    const newFiles = event.target.files[0];
-    const fileHash = await uploadfileToPinata(newFiles);
-
-    if (fileHash == undefined) {
-      setIsLoading(false);
+  const getContract = async () => {
+    if (window.ethereum) {
+      const provider = new ethers.BrowserProvider(window.ethereum); // A connection to the Ethereum network
+      var signer = await provider.getSigner(); // Holds your private key and can sign things
+      const Contract = new ethers.Contract(contractAddr, contractabi, signer);
+      return Contract;
     } else {
-      setLoadingMsg("Please Confirm with your Wallet");
-      await uploadfile(fileHash);
-      await fetchData();
-      // window.location.reload(true);
-      setIsLoading(false);
+      alert("No wallet detected");
     }
+  };
+
+  const getDocuments = async () => {
+    const deContract = await getContract();
+    var projects = await deContract.getDocuments(); 
+    console.log(projects) 
+    return projects;
+  }
+
+
+
+  const handleFileChange = (event) => {
+    const newFiles = event.target.files;
+
+    const newFileDataUrls = Array.from(newFiles).map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    const newFileNames = Array.from(newFiles).map((file) => file.name);
+
+    setFileNames((prevFileNames) => [...prevFileNames, ...newFileNames]); // Update file names
+
+    setFileDataUrls((prevFileDataUrls) => [
+      ...prevFileDataUrls,
+      ...newFileDataUrls,
+    ]);
+
+    // setSelectedFile((prevSelectedFiles) => [
+    //   ...prevSelectedFiles,
+    //   ...newFiles,
+    // ]);
+
+
     setIsModalVisible(false);
   };
 
@@ -101,15 +100,14 @@ export default function Uploads() {
     // If any matching files found in selectedFiles, set them as searchResults
     if (filteredFileDataUrls.length > 0) {
       setSearchResults(filteredFileDataUrls);
+
     } else {
-      setSearchResults([]);
+      
+      setSearchResults([])
     }
+
   };
 
-  // Clear out search field when empty
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   // Display content on File click
   const handleFileClick = (fileDataUrl)=> {
@@ -136,16 +134,16 @@ export default function Uploads() {
   // Modal visibility
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  //Loading Visibility
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingMsg, setLoadingMsg] = useState("Loading");
+   
 
   // Add a deleteFile function to remove a file from the dashboard and selectedFiles array
   const deleteFile = (fileToDelete) => {
+
     // Remove the file from the dashboard by filtering it out
     const updatedSelectedFiles = fileDataUrls.filter(
       (file) => file !== fileToDelete
     );
+
 
     // Remove the file from searchResults if it exists
     const updatedSearchResults = searchResults
@@ -157,82 +155,11 @@ export default function Uploads() {
     setSearchResults(updatedSearchResults);
   };
 
+
+
+
+  
   return (
-    <>
-      {isLoading && <Loader msg={loadingMsg} />}
-      <div
-        className={`bg-gradient-radial from-grey to-grey2 relative   h-auto overflow-hidden  `}
-      >
-        <NavWrapper />
-
-        <Navbar />
-
-        {/* search for files */}
-        <div className="flex justify-center">
-          <div className=" md:w-[40%] flex justify-between text-center mt-10 px-8 py-3 bg-white rounded-[50px] border-[2px] border-circleRed">
-            <input
-              className="w-[100%] outline-none"
-              placeholder="search files "
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            ></input>
-            <button
-              // value={searchTerm}
-              onClick={handleSearch}
-              variant="round"
-              size="sm"
-            >
-              Search
-            </button>
-          </div>
-        </div>
-        {/* search for files Ends*/}
-
-        {/* Displayed search items */}
-        <div className="px-16 flex gap-7 mt-10">
-          {searchResults.map((file, index) => (
-            <div key={index}>
-              <UploadFiles
-                key={index}
-                file={file}
-                fileNames={fileNames[index]}
-                fileDataUrl={fileDataUrls[index]}
-              />
-            </div>
-          ))}
-        </div>
-        {/* Displayed search items end */}
-
-        {/* Buttons */}
-        <div className="flex px-16 mt-20 gap-7">
-          <Link href="./">
-            <Button>Back</Button>
-          </Link>
-
-          <Button visibility={setIsModalVisible}>Upload</Button>
-        </div>
-        {/* Buttons end */}
-
-        {/* Contents dashboard */}
-        <div
-          style={{ background: "rgba(255, 255, 255, 0.26)" }}
-          className="mt-10 md:px-16 w-full min-h-screen bg-indigo-400 border-circleRed border-t-2 backdrop-blur-[10px]"
-        >
-          <div className="grid text-center grid-cols-2 md:grid-cols-5 py-4 gap-y-12">
-            {fileDataUrls.length > 0 &&
-              fileDataUrls.map((file, index) => (
-                <div key={index}>
-                  <UploadFiles
-                    key={index}
-                    file={file}
-                    fileNames={fileNames[index]}
-                    fileDataUrl={fileDataUrls[index]}
-                    index={index}
-                    deleteFile={deleteFile}
-                  />
-                </div>
-              ))}
     <div
       className={`bg-gradient-radial from-grey to-grey2 relative h-auto overflow-hidden  `}
     >
@@ -279,11 +206,6 @@ export default function Uploads() {
       </div>
       {/* Displayed search items end */}
 
-        {/* Modal */}
-        {isModalVisible && <Modal filechange={handleFileChange} />}
-        {/* Modal Ends */}
-      </div>
-    </>
       {/* Buttons */}
       <div className="flex px-16 mt-20 gap-7">
         <Link href="./">
